@@ -1,0 +1,23 @@
+Below is my script
+
+dt=$(date -d "+8 hours")
+
+for i in $(cat /root/vpn_list)
+do
+  echo $i
+  vpn=`ipsec status $i|grep 'ESTABLISHED'`
+  result=$(echo $vpn)
+
+  if [[ "$result" != "" ]];then
+    echo "$dt: $vpn is established"
+  elif
+    ipsec up $i
+    echo "$dt: $vpn is up"
+  then
+    if [[ "$result" != "" ]];then
+      echo "$dt: $vpn is established"
+    else
+      echo "$i VPN is broken | Please check immediately"|mailx -r 'xxxx@.com' -s smtp='xxxxxxx' -s smtp-use-starttls -ssmtp-auth=login -s smtp-auth-user='xxxx@.com' -s smtp-auth-password='xxxx' -s ssl-verify=ignore xxxx@.com -s "$i VPN is Down ($dt)"
+    fi
+  fi
+done
